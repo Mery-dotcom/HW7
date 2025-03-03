@@ -1,5 +1,6 @@
 package com.example.hw7.view.adapters
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
@@ -9,10 +10,7 @@ import com.bumptech.glide.Glide
 import com.example.hw7.databinding.ItemImageBinding
 import com.example.hw7.model.models.ImageResponse
 
-class ImageAdapter(
-    private val clickListener: (ImageResponse.Hit) -> Unit,
-    private val longClickListener: (ImageResponse.Hit) -> Unit
-): ListAdapter<ImageResponse.Hit, ImageAdapter.ImageViewHolder>(ImageDiffCallback()) {
+class ImageAdapter: ListAdapter<ImageResponse.Hit, ImageAdapter.ImageViewHolder>(ImageDiffCallback()) {
 
     class ImageViewHolder(val binding: ItemImageBinding) : RecyclerView.ViewHolder(binding.root)
 
@@ -28,8 +26,9 @@ class ImageAdapter(
     override fun onBindViewHolder(holder: ImageViewHolder, position: Int) {
         holder.binding.apply {
             val item = getItem(position)
+            Log.d("ImageAdapter", "Loading image URL: ${item.webformatURL}")
             Glide.with(holder.itemView)
-                .load(item.largeImageURL)
+                .load(item.webformatURL ?: item.largeImageURL) //1-34
                 .into(holder.binding.image)
         }
     }

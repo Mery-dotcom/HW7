@@ -35,7 +35,7 @@ android {
         }
 
         debug {
-            buildConfigField ("String", "API_URL", "\"https://pixabay.com\"")
+            buildConfigField ("String", "API_URL", "\"https://pixabay.com/\"")
         }
     }
     compileOptions {

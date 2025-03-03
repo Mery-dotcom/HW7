@@ -1,6 +1,7 @@
 package com.example.hw7.model.core
 
 import com.example.hw7.BuildConfig
+import com.example.hw7.model.core.RetrofitClient.retrofit
 import com.example.hw7.model.data.ImageService
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import dagger.Module
@@ -12,6 +13,7 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
 
 @Module
@@ -33,16 +35,15 @@ object RetrofitClient {
 
     @get:Provides
     @Singleton
-    val retrofit: Retrofit by lazy {
-        Retrofit.Builder()
+    val retrofit = retrofit2.Retrofit.Builder()
             .baseUrl(BuildConfig.API_URL)
             .client(httpClient)
-            .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
+            .addConverterFactory(GsonConverterFactory.create())
             .build()
-    }
-    @get:Provides
+
+    @Provides
     @Singleton
-    val imageService: ImageService by lazy {
-        retrofit.create(ImageService::class.java)
+    fun provideImageService(retrofit: retrofit2.Retrofit): ImageService {
+        return retrofit.create(ImageService::class.java)
     }
 }

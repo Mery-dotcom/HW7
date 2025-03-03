@@ -8,13 +8,14 @@ import javax.inject.Inject
 
 class ImageRepository @Inject constructor(private val imageService: ImageService) {
 
-    suspend fun getImages(apiKey: String, query: String): Either<String, ImageResponse> {
+    suspend fun getImages(apiKey: String, query: String): Either<Throwable, ImageResponse> {
         return try {
             val response = imageService.getImages(apiKey, query)
+            Log.d("ImageRepository", "Fetched images: ${response.hits?.size ?: 0} images")
             Either.Success(response)
-        } catch (e: Exception) {
-            Log.e("ololo", "Error fetching images: ${e.message}")
-            Either.Error(e.message ?: "Unknown error")
+        } catch (e: Throwable) {
+            Log.e("ImageRepository", "Error fetching images: ${e.message}", e)
+            Either.Error(e)
         }
     }
 }

@@ -2,6 +2,7 @@ package com.example.hw7.fragment
 
 import androidx.fragment.app.viewModels
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -40,10 +41,7 @@ class ImageFragment : Fragment() {
     }
 
     private fun init() {
-        adapter = ImageAdapter(
-            clickListener = { image -> },
-            longClickListener = { image -> }
-        )
+        adapter = ImageAdapter()
         binding.recyclerView.adapter = adapter
     }
 
@@ -51,7 +49,8 @@ class ImageFragment : Fragment() {
         viewModel.images.observe(viewLifecycleOwner) { response ->
             when (response){
                 is Either.Success -> {
-                    val images: List<ImageResponse.Hit> = response.success?.hits?.filterNotNull() ?: emptyList()
+                    val images: List<ImageResponse.Hit> = response.success.hits?.filterNotNull() ?: emptyList()
+                    Log.d("ImageFragment", "Received ${images.size} images")
                     adapter.submitList(images)
                     binding.errorTextView.visibility = View.GONE
                 }
@@ -65,7 +64,7 @@ class ImageFragment : Fragment() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is ImageViewModel.Event.ShowError -> {
-                    binding.errorTextView.text = event.message
+                    binding.errorTextView.text = event.image
                     binding.errorTextView.visibility = View.VISIBLE
                 }
             }
@@ -73,8 +72,9 @@ class ImageFragment : Fragment() {
     }
 
     private fun loadData() {
-        val apiKey = "Key"
-        val query = "query"
+        val apiKey = "49085045-188b342da441f8a6e1476a6e9"
+        val query = "car"
+        Log.d("ImageFragment", "Loading images with apiKey=$apiKey and query=$query")
         viewModel.getImages(apiKey, query)
     }
 }
