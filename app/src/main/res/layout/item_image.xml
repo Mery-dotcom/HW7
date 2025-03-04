@@ -9,7 +9,8 @@
         android:scaleType="centerCrop"
         android:src="@drawable/ic_launcher_background"
         app:layout_constraintTop_toTopOf="parent"
-        android:layout_width="match_parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_width="400dp"
         android:layout_height="400dp"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

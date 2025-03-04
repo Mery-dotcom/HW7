@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide.init
 import com.example.hw7.view.viewModels.ImageViewModel
@@ -47,18 +48,9 @@ class ImageFragment : Fragment() {
 
     private fun updateUi() {
         viewModel.images.observe(viewLifecycleOwner) { response ->
-            when (response){
-                is Either.Success -> {
-                    val images: List<ImageResponse.Hit> = response.success.hits?.filterNotNull() ?: emptyList()
-                    Log.d("ImageFragment", "Received ${images.size} images")
-                    adapter.submitList(images)
-                    binding.errorTextView.visibility = View.GONE
-                }
-                is Either.Error -> {
-                    binding.errorTextView.text = "Error: ${response.error}"
-                    binding.errorTextView.visibility = View.VISIBLE
-                }
-            }
+            val images = response.hits?.filterNotNull() ?: emptyList()
+            adapter.submitList(images)
+            binding.errorTextView.visibility = if (images.isEmpty()) View.VISIBLE else View.GONE
         }
 
         viewModel.event.observe(viewLifecycleOwner) { event ->
@@ -69,12 +61,21 @@ class ImageFragment : Fragment() {
                 }
             }
         }
+
+        viewModel.weather.observe(viewLifecycleOwner, Observer { weather ->
+            val temp = weather.current?.tempC
+            binding.tvWeather.text = "$temp°C"
+            binding.tvWeather.visibility = View.VISIBLE
+        })
     }
 
     private fun loadData() {
         val apiKey = "49085045-188b342da441f8a6e1476a6e9"
-        val query = "car"
-        Log.d("ImageFragment", "Loading images with apiKey=$apiKey and query=$query")
+        val query = "beach"
         viewModel.getImages(apiKey, query)
+
+        val weatherApiKey = "4019aa9d8ddd44c9a47150314250702"
+        val city = "Bishkek"
+        viewModel.getWeather(weatherApiKey, city)
     }
 }
