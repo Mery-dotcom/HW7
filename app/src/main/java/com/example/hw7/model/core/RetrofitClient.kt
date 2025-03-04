@@ -1,8 +1,8 @@
 package com.example.hw7.model.core
 
 import com.example.hw7.BuildConfig
-import com.example.hw7.model.core.RetrofitClient.retrofit
 import com.example.hw7.model.data.ImageService
+import com.example.hw7.model.data.WeatherService
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import dagger.Module
 import dagger.Provides
@@ -35,15 +35,23 @@ object RetrofitClient {
 
     @get:Provides
     @Singleton
-    val retrofit = retrofit2.Retrofit.Builder()
+    val retrofit: Retrofit by lazy {
+        Retrofit.Builder()
             .baseUrl(BuildConfig.API_URL)
             .client(httpClient)
-            .addConverterFactory(GsonConverterFactory.create())
+            .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
             .build()
+    }
 
     @Provides
     @Singleton
     fun provideImageService(retrofit: retrofit2.Retrofit): ImageService {
         return retrofit.create(ImageService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideWeatherService(retrofit: retrofit2.Retrofit): WeatherService {
+        return retrofit.create(WeatherService::class.java)
     }
 }
